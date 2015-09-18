@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html$if(lang)$ lang="$lang$"$endif$>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    $for(author)$<meta name="author" content="$author$" />$endfor$
+    <title>$title$</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" rel="stylesheet" type="text/css" />
+    <link href='http://fonts.googleapis.com/css?family=Alegreya:400italic,400' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Share+Tech+Mono' rel='stylesheet' type='text/css'>
+    <style>
+      body {
+        font: 14pt/18pt 'Alegreya';
+        max-width: 470pt;
+        margin:0 auto;
+        color: #333;
+        background-color: #fff;
+      }
+      code, pre {
+        font: 10pt/12pt 'Share Tech Mono';
+      }
+      a {
+        color: #337ab7;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      small {
+        font-size: smaller;
+      }
+      #content {
+        counter-reset: h1counter;
+      }
+      header {
+        margin-bottom: 2em;
+      }
+      header h1.title {
+        font-size: 32pt;
+        line-height: 34pt;
+        letter-spacing: 2pt;
+        padding-top: 17pt;
+      }
+      footer {
+        font-size: smaller;
+        border: 0;
+        height: 0;
+        border-top: 2px black solid;
+        margin: 1em 0em;
+        padding: .5em 0em 1em 0em;
+      }
+      #content h1,
+      #content h2,
+      #content h3,
+      #content h4,
+      #content h5,
+      #content h6,
+      #content p,
+      #content ul,
+      #content ul li,
+      #content pre {
+        margin-bottom: 14pt;
+      }
+      #content p,
+      #content ul li {
+        text-align: justify;
+      }
+      #content h1 {
+        font-size: 21pt;
+        text-transform: uppercase;
+        letter-spacing: 2pt;
+        border-bottom: 2pt black solid;
+        padding: 17pt 0;
+        counter-reset: h2counter;
+        position: relative;
+      }
+      #content h2 {
+        text-transform: uppercase;
+        letter-spacing: 2pt;
+        counter-reset: h3counter;
+      }
+      #content h3,
+      #content h4 {
+        font-style: italic;
+      }
+      #content h2:before,
+      #content h3:before,
+      #content h4:before {
+        font-style: normal;
+        font-variant: small-caps;
+        text-transform: lowercase;
+        margin-right: 6pt;
+      }
+      #content h1:before {
+        font-size: 100pt;
+        counter-increment: h1counter;
+        content: counter(h1counter);
+        position: absolute;
+        right: -70pt;
+        bottom: -30pt;
+        color: #666;
+      }
+      #content h2:before {
+        counter-increment: h2counter;
+        content: counter(h2counter);
+      }
+      #content h3:before {
+        counter-increment: h3counter;
+        content: counter(h2counter)"."counter(h3counter);
+      }
+      #content ul {
+        list-style-type: square;
+        padding-left: 21pt;
+      }
+      #content pre {
+        padding: 10pt;
+        background-color: #f5f5f5;
+        border: 1pt solid #ccc;
+        border-radius: 4pt;
+      }
+      #content code {
+        color: #c7254e;
+        background-color: #f9f2f4;
+        border-radius: 4pt;
+        padding: 2pt 4pt;
+      }
+      #content pre code {
+        padding: 0;
+        background-color: transparent;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1 class="title">$title$</h1>
+      $for(author)$<h2 class="author">$author$</h2>$endfor$
+    </header>
+    $if(toc)$<nav id="$idprefix$TOC">$toc$</nav>$endif$
+    <section id="content">$body$</section>
+    <footer>
+        This work is licensed under a <a rel="license"
+        href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+        Commons Attribution-ShareAlike 4.0 International License</a>.
+    </footer>
+  </body>
+</html>
