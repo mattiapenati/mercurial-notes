@@ -1,0 +1,616 @@
+% Mercurial for the impatient
+% Mattia Penati & Francesco Cattoglio
+
+# Starting with Mercurial #
+
+Mercurial is a version control system (VCS), essentially it is a tool that
+assists you along the development of a project by keeping track its evolution
+and history, moreover it makes it easier to collaborate or to work
+simultaneously on different versions of the same project. There are a lot of
+common situations where the usage of a VCS can help you and save you a lot of
+time:
+
+* Are you trying a new implementation of some method? Then probably the
+  directory of your project contains a lot of files named something along the
+  lines of `method`, `method1`, `method1a`, `method2` and so on. With a VCS you
+  can handle different version of the same project, you can make a lot of
+  changes or recover any older version without difficulties.
+* You made some changes to your project and now it does not work properly?
+  A VCS is able to keep track all the changes and can help you to locate when,
+  where and who commited the mistake.
+* Having lots of people working simultaneously on the same project can speed up
+  the development, but sometimes it is necessary to merge all the works to
+  check that it works properly. Again, with a VCS you can do it easily!
+
+And there are more and more other situations in which a VCS can save you work
+and time.
+
+There are a lot different version control system and their history started long
+time ago. I don't want to waste your time, so I will be very short. The first
+VCSs were CVS (Concurrent Version System) and Subversion (also known as `svn`),
+both of them rely on a server-client structure; this means that the server
+stores the history of the project and you need to communicate each action to
+the sever before you move forward. For this reason they are very hard to use
+for very small projects, because if you want to make everything alone, just
+setting up the server will require a lot of work. Even though centralized VCSs
+are used to develop very big and successful projects (like Apache projects and
+FreeBSD), the current generation of VCS is dominated by distributed ones.
+
+The distributed VCSs drastically change the point of view: each developer owns
+its own copy of the project history, called repository, and can advance
+independently; when it is necessary the developers communicate and can
+import/export the history from/to another repository and then merge the
+histories. Obviously this kind of tools can be very dangerous, because each
+developer can go forward and become a source of divergence among the other
+developers; on the other side the distributed VCSs are studied to simplify the
+merge process. More importantly: source divergencies depend on the tools, not
+on the people! The two most common distributed VCSs are Git and Mercurial;
+I don't care about which of them is the best, personally I like Mercurial and
+I think that it is simpler to use if you never used a VCS before: with less
+then ten commands and a good set of rules shared by the developers you can
+administrate any project.
+
+## Installing Mercurial ##
+
+Before we start you need to install a fresh copy of Mercurial (the current
+version is 3.5); since it is written in Python with a small portion of C, then
+Mercurial is available for almost all platforms and it can be installed without
+difficulties.
+
+### Linux ###
+
+Each Linux distribution has its own packaging tools and for this reason its
+quite difficult to give an unique set of instructions on how to install
+Mercurial. The main distributions provide a graphical package manager that will
+help you to install it with a single click. If you are a command line user then
+you can try one of these commands (choose the correct one up to your current
+distribution):
+
+* Debian or Ubuntu: `apt-get install mercurial`
+* RedHat or Fedora: `yum install mercurial`
+* OpenSUSE: `zypper install mercurial`
+* Gentoo: `emerge mercurial`
+* if you have Python installed you can try `easy_install mercurial` or `pip
+  install mercurial`
+
+### MacOSX ###
+
+If you are a GUI lover you can try to use SourceTree application developed by
+Atlassian, it can be download from <https://www.sourcetreeapp.com>. Otherwise
+if you prefer the command line you will first have to install XCode, then you
+can try to use the command `sudo easy_install mercurial`. If you have a package
+manager (Fink, MacPorts or Homebrew) you can use that instead.
+
+### Windows ###
+
+I really don't know what is the proper procedure for installing Mercurial on
+Windows, but the SourceTree application is available for it, go try it! You can
+download it from <https://www.sourcetreeapp.com>.
+
+## Getting start ##
+
+Let's now check if everything has been properly installed and if it works.
+Mercurial is invoked using the command `hg` followed by the subcommand, for
+example if you want to known the current version you are using then you have to
+use `hg version` and the output will be something like this
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg version
+Mercurial Distributed SCM (version 3.4)
+(see http://mercurial.selenic.com for more information)
+
+Copyright (C) 2005-2015 Matt Mackall and others
+This is free software; see the source for copying conditions. There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The most useful subcommand of Mercurial it is the built-in help system. It can
+be an invaluable help when you run a command and you don't remember exactly its
+syntax or what it really does. Simply run `hg` and then a brief list of
+available commands will be printed:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg
+Mercurial Distributed SCM
+
+basic commands:
+
+ add           add the specified files on the next commit
+ annotate      show changeset information by line for each file
+ clone         make a copy of an existing repository
+ commit        commit the specified files or all outstanding changes
+ diff          diff repository (or selected files)
+ export        dump the header and diffs for one or more changesets
+ forget        forget the specified files on the next commit
+ init          create a new repository in the given directory
+ log           show revision history of entire repository or files
+ merge         merge another revision into working directory
+ pull          pull changes from the specified source
+ push          push changes to the specified destination
+ remove        remove the specified files on the next commit
+ serve         start stand-alone webserver
+ status        show changed files in the working directory
+ summary       summarize working directory state
+ update        update working directory (or switch revisions)
+
+(use "hg help" for the full list of commands or "hg -v" for details)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As written in the last line of this brief help, with the command `hg help` the
+full set of commands will be printed and the flag `-v` (or `--verbose`) can
+make the output even more verbose. Even more, if you want to know something
+about a specific command you have to use `hg help` followed by the name of
+command you are looking for. This holds true even for the built-in help!
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg help help
+hg help [-ec] [TOPIC]
+
+show help for a given topic or a help overview
+
+    With no arguments, print a list of commands with short help messages.
+
+    Given a topic, extension, or command name, print help for that topic.
+
+    Returns 0 if successful.
+
+options:
+
+ -e --extension     show only help for extensions
+ -c --command       show only help for commands
+ -k --keyword VALUE show topics matching keyword
+
+(some details hidden, use --verbose to show complete help)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+## Working with a repository ##
+
+Mercurial helps you to track the history of your project and keep in mind when,
+where and who makes changes to project files, but Mercurial is not a magic tool
+and you should follow some basic rule to work with it. The first rule is that
+your project must reside in a single directory, this directory can contain
+everything: files or other nested directories. Then you can copy or move this
+directory, but Mercurial continues to assume that is your project directory.
+
+Inside this directory Mercurial creates an hidden directory called `.hg` that
+contains Mercurial private files and this is the *real repository*, even though
+from now on I will call *repository* the project directory.
+
+When you are located inside your project directory or in one of its nested
+subdirectories `hg` is assuming that you are working on this project and all
+commands act on the repository where you are located.
+
+But what is the content of a repository? Essentially it contains a current
+version of your project and several more copies of it, each one being
+a snapshot taken at a specific time, annotated with a description and some
+extra information. So you can think a repository as a sequence of snapshots of
+your project, and Mercurial is the tool that helps you to travel through the
+history. Each of these snapshots is called *revision* or *changeset*, each
+*revision* has an unique name (an *identifier*) and some information attached
+to it.
+
+The snapshots are organized as they are disposed along a timeline in
+chronological order, so in the simplest case each one of them has a snapshot
+before it and another right after it (with the obvious exception of the first
+and the last one). But as will be clear later a snapshot can be a result of the
+merging of works of two different people, therefore a snapshot can have two
+parents (and no more). On the other side since each developer acts on its own
+repository they can share the same history up to a snapshot, then the changes
+start to diverge and a snapshot can have more than children. Mercurial gives
+you the tools to manage the history in a very simple way.
+
+### Starting a new project ###
+
+The command `hg init` helps you to start a new project and there are two
+different ways. First, if you want to start a new blank project inside a new
+directory called `myproject` the command to use is `hg init myproject`. This
+command create a new empty directory `myproject` and then initialize it as
+a Mercurial repository, for this reason it creates a `.hg` inside it.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg init myproject
+$ cd myproject
+$ ls -a
+.   ..  .hg
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Otherwise, if your project has been previously developed and you never used
+a VCS then the project directory already exists, then `cd` inside your project
+directory (suppose to be `myproject` another time) and call `hg init`.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ cd myproject
+$ hg init
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Now your repository has been setup and it is ready to track the changes and the
+different versions of your code.
+
+When you start a new repository the history is empty and it does not contain
+any snapshot. Please remember that Mercurial never takes a snapshot by itself,
+it always awaits for your command to create one.
+
+### Tracking new files ###
+
+The second command is `hg add`, it is used to instruct Mercurial about which
+files belong to the project, because it is not a good idea to manage all the
+files contained in the project directory. As an example, the files created
+during the build process should not be managed by a VCS. Let's start by
+creating a new file inside our empty project:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ cd myproject
+$ echo "int main() { return 0; }" > dummy.c
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The command `hg status` tells you what Mercurial knowns about the files
+contained in the repository.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg status
+? dummy.c
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The `hg status` prints a list of some files contained in your repository, each
+of them is preceded by a character that identify its status. A question mark is
+used for the files contained in the repository that are not currently tracked
+by Mercurial: notice how `dummy.c` is not tracked and therefore it is not part
+of the repository just yet. The `hg add` changes the status of a file and adds
+it to the current repository; the input to this command can be a file or a list
+of files, you can also specify a directory, but remember that Mercurial is not
+able to track empty directories, it only tracks files!
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg add dummy.c
+$ hg status
+A dummy.c
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Now the status of the file `dummy.c` is `A`, this means that the file has been
+added to the repository and it will be part of the future snapshots.
+
+### Recording the changes ###
+
+The `hg commit` takes a snapshot of your repository and creates a new
+changeset, recording all the required information. Let's try it and see how it
+works.
+
+If this is your first time with Mercurial then probably something similar to
+this will be printed on your screen:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg commit
+abort: no username supplied
+(use "hg config --edit" to set your username)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Why? Because Mercurial needs to known who is the author of the snapshot, so you
+need to provide this information. The are different ways to say to Mercurial
+who is taking the snapshot, but let see the simplest one and follow the hint.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg config --edit
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Mercurial will open a partially filled configuration file using your preferred
+text editor; fill the `username` field with your name, followed by your email
+address enclosed between the angular parenthesis, for example:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+username = Jane Doe <jdoe@example.com>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Then save and close the configuration file, from now on Mercurial will not
+annoy you any more. By default the configuration file name is `.hgrc` and it is
+located in your home directory, for more information consult the manual page
+with `man hgrc`. Now try it again, type `hg commit` then press enter; your
+editor has been opened a second time and it will contain two empty lines
+followed by this message:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+HG: Enter commit message.  Lines beginning with 'HG:' are removed.
+HG: Leave message empty to abort commit.
+HG: --
+HG: user: Jane Doe <jdoe@example.com>
+HG: branch 'default'
+HG: added dummy.c
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Mercurial wants you to tell about why you are taking a snapshot. You should now
+write a message that will be attached to the snapshot, and the message should
+be structured as follows: the first line should contain a short but informative
+message, the next line should be empty and everything that follows should be
+a detailed description of the snapshot. Every line that starts with HG will be
+ignored by Mercurial. If you do not provide any description the commit
+operation is aborted.
+
+Writing a good commit message is very useful, because it can help you to keep
+track of why some changes have been introduced in your project: nobody is able
+to remember the reasons behind every single change in a project and you are
+always focused on the most recent version of the project. Moreover, remember
+that if other people are working on the same project they need to be informed
+about the work of the others. Because of those reasons writing just `added
+dummy.c` is not a good idea, because Mercurial already provides this
+information. It is more useful to describe what the file contains and the
+reason why it has been committed, so that the other developers will already
+have a rough idea about what is going on and won't need to inspect the content
+of every added file.
+
+Once the commit has been done you can inspect the status of the repository with
+`hg status`. It might seem that nothing happened from the last commit, because
+the command gives an empty message.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg status
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Now try to edit `dummy.c` file, as you prefer.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg status
+M dummy.c
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Now the status of `dummy.c` is `M`, this means that it has been modified since
+the last commit. Now, let's suppose that I want to commit this change, but
+I want to provide only a short message since the change was very small. By
+passing in the `-m` flag, you can specify a brief message without opening the
+editor. Then the commit is recorded and the status is clean.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg commit -m "A really useless change, don't worry about that"
+$ hg status
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+### Remove, rename and copy ###
+
+Obviously files can also be removed, renamed or copied, and Mercurial provides
+the commands to perform these operations in the correct way. You can use the
+system commands to perform these operations, but then Mercurial would not be
+able to track how these operations change the look of your repository. For
+example, if two developers change the name of the same file in a different way,
+then during the merge Mercurial has to know how the file has been renamed to
+reconstruct correctly the history; if we keep this information (the name before
+renaming operation) then it is able to detect such divergence, notice it and
+perform the correct operation.
+
+Once you decide to remove a file from your repository, use the `hg remove`
+command, this deletes the file and Mercurial stops tracking it. The status of
+removed files is denoted by the letter `R`.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg remove dummy.c
+$ hg status
+R dummy.c
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Mercurial also provides the command `hg copy` that creates a new copy of
+a previously tracked file and adds it to the repository, then its status is
+denoted by `A`.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg copy dummy.c foo.c
+$ hg status
+A foo.c
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can also use the command `cp` followed by `hg add`, but is not the same
+operation: so keep in mind that Mercurial treats the copied files specially.
+During the merge process Mercurial remember all the copy operations. This will
+be clear later when the merge process will be described, for now keep in mind
+this rule when create a copy of an existing file:
+
+* the new file is *related* to the old one, then use `hg copy`,
+* the new file is *unrelated* to the old one, then use `cp` followed by `hg add`.
+
+Sometimes it is necessary to rename a file, the command is `hg rename` and
+Mercurial treats a rename just like a copy plus a delete: Mercurial makes
+a copy and then deletes it, the new file is added and the old one removed from
+the repository.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg rename dummy.c foo.c
+$ hg status
+A foo.c
+R dummy.c
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+All these commands have a shortcut and all them will be familiar if you know
+the respective UNIX commands. Since Mercurial is fully consistent with itself,
+the flag `-v` can be used to increase the verbosity of these commands.
+
+* `hg remove`: `hg rm`
+* `hg copy`: `hg cp`
+* `hg rename`: `hg move` or `hg mv`
+
+### Time travelling ###
+
+All the previously described commands give you the power to change the look of
+your repository, but none of them can interact directly with its history. Some
+operations are really simple in Mercurial, like:
+
+* inspecting a single snapshot with `hg update`;
+* inspecting the whole history of the repository with `hg log`;
+
+Later we will examine commands that do more useful and difficult operations,
+like restoring an old snapshot of the repository or of a file contained in.
+
+The `hg update` command updates the repository's working directory to
+a specified revision. If no revision is specified then, by default, the
+repository is moved to the last revision, also called `tip`. With the flag `-r`
+or `--rev` you can specific to which revision you want to move. If you want to
+move back to the initial state of your repository it is enough to type `hg
+update -r 0`.
+
+Any uncommitted change won't be memorized by Mercurial, so remember to commit
+everything before switching to a previous revision. If you don't commit your
+changes then Mercurial will ask what it should do in this case: it can keep the
+changes and move the given revision with the current modified files or
+alternatively it can discards all the changes and lose your work.
+
+The `hg log` command queries the history of the repository. Without arguments
+it prints the whole revision history of the whole repository and for old
+projects it can be a lot of information. Luckily we can specify both the
+revisions and the files to show, let's see how!
+
+#### Log a given set of files ####
+
+If you want to show the history of only one file you have to give the filename
+as arguments to the `log` command. So, for example, the command `hg log README`
+shows you the whole history of the file `README`, if used in source directory
+of Mercurial project the output is the follow.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg log REDME
+changeset:   16217:df5ecb813426
+user:        Ross Lagerwall <rosslagerwall@gmail.com>
+date:        Fri Mar 02 21:43:55 2012 +0200
+summary:     readme: mention how to run in-place
+
+changeset:   12857:a9f91c844a3b
+branch:      stable
+user:        Martin Geisler <mg@lazybytes.net>
+date:        Wed Oct 27 12:05:37 2010 +0200
+summary:     README: add small introduction
+
+...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In the same way you can specify a set of files and display their history
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg log README Makefile
+changeset:   24973:4c4d0012db4f
+user:        Augie Fackler <augie@google.com>
+date:        Wed May 06 13:15:39 2015 -0400
+summary:     dockerdeb: rules to build a debian package using docker
+
+changeset:   24971:ab75baaf81d5
+user:        Augie Fackler <augie@google.com>
+date:        Wed May 06 13:13:54 2015 -0400
+summary:     builddeb: new script for building a deb package
+
+...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Now let's see how to filter the revisions and limit the information to
+a specific set of those. More than one flag can be used and remember that they
+can be used together and you can always specify the files.
+
+#### Log a given number of revisions ####
+
+The number of printed revisions can be limited with the flag `-l` or `--limit`.
+For example `hg log -l 3` print the last 3 revision of the project.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg log -l 3
+changeset:   25889:79f0cb97d753
+branch:      stable
+bookmark:    @
+tag:         tip
+user:        Matt Mackall <mpm@selenic.com>
+date:        Fri Jul 31 11:56:28 2015 -0500
+summary:     Added signature for changeset 21aa1c313b05
+
+changeset:   25888:ba789c15029b
+branch:      stable
+user:        Matt Mackall <mpm@selenic.com>
+date:        Fri Jul 31 11:56:24 2015 -0500
+summary:     Added tag 3.5 for changeset 21aa1c313b05
+
+changeset:   25887:21aa1c313b05
+branch:      stable
+tag:         3.5
+user:        Matt Mackall <mpm@selenic.com>
+date:        Fri Jul 31 10:49:15 2015 -0500
+summary:     i18n: fix unclosed inline span in pt_BR
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#### Log a given temporal range ####
+
+We can select the revisions of a specific date with `-d` or `--date`. For
+example `hg log -d "Jul 21"` print the revision created in July, 21st. Use `hg
+help dates` to see the valid formats for dates and remember
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg log -d "Jul 21"
+changeset:   25889:79f0cb97d753
+branch:      stable
+bookmark:    @
+tag:         tip
+user:        Matt Mackall <mpm@selenic.com>
+date:        Fri Jul 31 11:56:28 2015 -0500
+summary:     Added signature for changeset 21aa1c313b05
+
+changeset:   25888:ba789c15029b
+branch:      stable
+user:        Matt Mackall <mpm@selenic.com>
+date:        Fri Jul 31 11:56:24 2015 -0500
+summary:     Added tag 3.5 for changeset 21aa1c313b05
+
+...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#### Log a given set of revisions ####
+
+A specific set of revisions can be provided with the flag `-r` or `--rev`. You
+can specify a single revision:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg log -r 1
+changeset:   1:273ce12ad8f1
+user:        mpm@selenic.com
+date:        Tue May 03 13:27:13 2005 -0800
+summary:     Update README to discuss remote pull, rsync, and the hg repo
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A range or revisions with a colon between the range boundaries:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg log -r 1:3
+changeset:   1:273ce12ad8f1
+user:        mpm@selenic.com
+date:        Tue May 03 13:27:13 2005 -0800
+summary:     Update README to discuss remote pull, rsync, and the hg repo
+
+changeset:   2:ecf3fd948051
+user:        mpm@selenic.com
+date:        Tue May 03 18:35:03 2005 -0800
+summary:     Handle nullid better for ancestor
+
+changeset:   3:3a6392190075
+user:        mpm@selenic.com
+date:        Tue May 03 18:35:26 2005 -0800
+summary:     Ignore build/ and .pyc files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Take care of the order of the range boundaries: `hg log -r 1:3` is different
+from `hg log -r 3:1`, the information are printed in the reverse order.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ hg log -r 3:1
+changeset:   3:3a6392190075
+user:        mpm@selenic.com
+date:        Tue May 03 18:35:26 2005 -0800
+summary:     Ignore build/ and .pyc files
+
+changeset:   2:ecf3fd948051
+user:        mpm@selenic.com
+date:        Tue May 03 18:35:03 2005 -0800
+summary:     Handle nullid better for ancestor
+
+changeset:   1:273ce12ad8f1
+user:        mpm@selenic.com
+date:        Tue May 03 13:27:13 2005 -0800
+summary:     Update README to discuss remote pull, rsync, and the hg repo
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Even more things can be done with this flags, for a more detailed and advanced
+usage see how you can [specify revision
+sets](https://selenic.com/hg/help/revsets).
+
+
+<!--  # Working with multiple versions # -->
+
+<!-- # Collaborating with other people # -->
